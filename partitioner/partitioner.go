@@ -1,3 +1,10 @@
+// Package partitioner provides a Sarama partitioner that uses the same
+// murmur2-based hashing as the Kafka JVM clients, so keyed messages are
+// routed to the same partitions as Java producers.
+//
+// Deprecated: Sarama v1.50.0+ ships an equivalent partitioner. Use
+// sarama.NewMurmur2Partitioner instead; it produces identical partition
+// assignments. See the repository README for migration details.
 package partitioner
 
 import (
@@ -8,6 +15,9 @@ import (
 
 // NewJVMCompatiblePartitioner creates a Sarama partitioner that uses
 // the same hashing algorithm as JVM Kafka clients.
+//
+// Deprecated: use sarama.NewMurmur2Partitioner (Sarama v1.50.0+), which
+// produces identical partition assignments.
 func NewJVMCompatiblePartitioner(topic string) sarama.Partitioner {
 	return sarama.NewCustomHashPartitioner(MurmurHasher)(topic)
 }
@@ -24,6 +34,10 @@ type murmurHash struct {
 // It only implements the interface to comply with sarama.NewCustomHashPartitioner signature.
 // But Sarama only uses Write method once, when writing keys and values of the message,
 // so streaming support is not necessary.
+//
+// Deprecated: Sarama v1.50.0+ ships a Java-compatible murmur2 partitioner
+// (sarama.NewMurmur2Partitioner), so there is no longer a need to supply a
+// custom hasher to Sarama.
 func MurmurHasher() hash.Hash32 {
 	return new(murmurHash)
 }
